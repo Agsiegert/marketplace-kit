@@ -6,6 +6,7 @@ const program = require('commander'),
   request = require('request'),
   notifier = require('node-notifier'),
   logger = require('./lib/kit').logger,
+  authorizationHeader = require('./lib/authorizationHeader'),
   fs = require('fs');
 
 const fetchLogs = authData => {
@@ -15,7 +16,7 @@ const fetchLogs = authData => {
         uri: authData.url + 'api/marketplace_builder/logs',
         qs: { last_id: storage.lastId },
         method: 'GET',
-        headers: { UserTemporaryToken: authData.token }
+        headers: authorizationHeader(authData.token)
       },
       (error, response, body) => {
         if (error) reject({ status: error });

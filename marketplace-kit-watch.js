@@ -6,6 +6,7 @@ const program = require('commander'),
   watch = require('node-watch'),
   notifier = require('node-notifier'),
   logger = require('./lib/kit').logger,
+  authorizationHeader = require('./lib/authorizationHeader'),
   version = require('./package.json').version;
 
 const DEFAULT_FILES =
@@ -30,7 +31,7 @@ const ping = authData => {
       {
         uri: authData.url + 'api/marketplace_builder/logs',
         method: 'GET',
-        headers: { UserTemporaryToken: authData.token }
+        headers: authorizationHeader(authData.token)
       },
       (error, response, body) => {
         if (error) reject({ status: error });
@@ -47,7 +48,7 @@ const pushFile = path => {
     {
       uri: program.url + 'api/marketplace_builder/marketplace_releases/sync',
       method: 'PUT',
-      headers: { UserTemporaryToken: program.token },
+      headers: authorizationHeader(program.token),
       formData: {
         path: path.replace('marketplace_builder/', ''),
         marketplace_builder_file_body: fs.createReadStream(path)

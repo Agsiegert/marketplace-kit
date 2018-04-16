@@ -5,6 +5,7 @@ const program = require('commander'),
   fs = require('fs'),
   handleResponse = require('./lib/handleResponse'),
   logger = require('./lib/kit').logger,
+  authorizationHeader = require('./lib/authorizationHeader'),
   version = require('./package.json').version;
 
 const fetchDeploymentStatus = (id, authData) => {
@@ -13,7 +14,7 @@ const fetchDeploymentStatus = (id, authData) => {
       {
         uri: authData.url + 'api/marketplace_builder/marketplace_releases/' + id,
         method: 'GET',
-        headers: { UserTemporaryToken: authData.token }
+        headers: authorizationHeader(authData.token)
       },
       (error, response, body) => {
         if (error) {
@@ -51,7 +52,7 @@ const pushFile = path => {
     {
       uri: program.url + 'api/marketplace_builder/marketplace_releases',
       method: 'POST',
-      headers: { UserTemporaryToken: program.token },
+      headers: authorizationHeader(program.token),
       formData: {
         'marketplace_builder[zip_file]': fs.createReadStream(path),
         'marketplace_builder[force_mode]': (program.force || process.env.FORCE || '').toString()
